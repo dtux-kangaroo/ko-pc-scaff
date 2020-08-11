@@ -2,11 +2,9 @@ import * as React from 'react';
 import { Layout } from 'antd';
 import { connect } from 'react-redux';
 import TopBar from './topBar';
-import Foot from 'components/footer';
+//import Foot from 'components/footer';
 import { withRouter } from 'react-router';
-import * as global from '@/pages/global/redux/action';
 import ErrorBoundary from '@/components/errorBoundary';
-import { bindActionCreators } from 'redux';
 import './style.scss';
 
 interface IProps {
@@ -19,10 +17,20 @@ interface IProps {
 interface IState {
 	loading: boolean;
 }
-@connect(
-	(state) => ({ ...state.global }),
-	(dispatch) => bindActionCreators({ ...global }, dispatch)
-)
+
+const mapState = (state) => {
+  console.log("state", state)
+  return {
+    navData: state.global.navData
+  };
+};
+
+const mapDispatch = ({ global: {  getNavData }}) => {
+  return {
+    getNavData ,
+  };
+};
+
 class MainLayout extends React.Component<IProps, IState> {
 	constructor(IProps: any) {
 		super(IProps);
@@ -31,6 +39,7 @@ class MainLayout extends React.Component<IProps, IState> {
 		loading: false,
 	};
 	componentDidMount() {
+		console.log(2);
 		this.props.getNavData({});
 	}
 
@@ -41,10 +50,11 @@ class MainLayout extends React.Component<IProps, IState> {
 				<ErrorBoundary>
 				   {isTopHide&&<TopBar location={location} navData={navData} />}
 					<div style={{top:isTopHide?"64px":"0px"}} className="main-layout">{children}</div>
-					<Foot />
+					{/* <Foot /> */}
 				</ErrorBoundary>
 			</Layout>
 		);
 	}
 }
-export default withRouter(MainLayout);
+export default connect(mapState, mapDispatch)(withRouter(MainLayout))
+
